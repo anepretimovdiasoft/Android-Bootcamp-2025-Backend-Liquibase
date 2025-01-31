@@ -57,6 +57,7 @@ public class PersonServiceImpl implements PersonService {
 
         person.setName(dto.getName());
         person.setEmail(dto.getEmail());
+        person.setPhotoUrl(dto.getPhotoUrl());
 
         Optional<Department> department = departmentRepository.findByName(dto.getDepartmentName());
         department.ifPresent(person::setDepartment);
