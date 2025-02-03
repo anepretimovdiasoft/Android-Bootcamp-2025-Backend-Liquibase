@@ -3,11 +3,11 @@ package com.example.edu.dto;
 import lombok.Data;
 
 @Data
-public class PersonDTO {
+public class PersonRegisterDto {
     private Long id;
     private String name;
     private String username;
+    private String password;
     private String email;
-    private String photoUrl;
     private String departmentName;
 }

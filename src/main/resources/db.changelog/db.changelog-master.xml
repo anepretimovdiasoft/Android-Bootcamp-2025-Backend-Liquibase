@@ -9,4 +9,9 @@
 
     <include file="db.changelog/data/2025-01-29--0001-department-data.xml"/>
     <include file="db.changelog/data/2025-01-29--0002-person-data.xml"/>
+
+    <include file="db.changelog/1.0/2025-02-02--0003-authority.xml"/>
+    <include file="db.changelog/1.0/2025-02-02--0004-person-authorities.xml"/>
+    <include file="db.changelog/data/2025-02-02--0003-authority-data.xml"/>
+    <include file="db.changelog/data/2025-02-02--0004-person-authorities-data.xml"/>
 </databaseChangeLog>

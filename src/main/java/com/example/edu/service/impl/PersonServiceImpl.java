@@ -1,19 +1,25 @@
 package com.example.edu.service.impl;
 
 import com.example.edu.dto.PersonDTO;
+import com.example.edu.dto.PersonRegisterDto;
+import com.example.edu.entity.Authority;
 import com.example.edu.entity.Department;
 import com.example.edu.entity.Person;
 import com.example.edu.exception.DepartmentNotFoundException;
+import com.example.edu.exception.PersonAlreadyExistsException;
 import com.example.edu.exception.PersonNotFoundException;
+import com.example.edu.repository.AuthorityRepository;
 import com.example.edu.repository.DepartmentRepository;
 import com.example.edu.repository.PersonRepository;
 import com.example.edu.service.PersonService;
 import com.example.edu.utils.PersonMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +27,8 @@ import java.util.stream.Collectors;
 public class PersonServiceImpl implements PersonService {
     private final PersonRepository personRepository;
     private final DepartmentRepository departmentRepository;
+    private final AuthorityRepository authorityRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<PersonDTO> getAllPersons() {
@@ -37,16 +45,34 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonDTO createPerson(PersonDTO dto) {
+    public PersonDTO getPersonByUsername(String username) {
+        Optional<Person> userOptional = personRepository.findByUsername(username);
+
+        if (userOptional.isEmpty()) throw new PersonNotFoundException("User with username " + username + " not found");
+
+        return PersonMapper.convertToDTO(userOptional.get());
+    }
+
+    @Override
+    public PersonDTO createPerson(PersonRegisterDto dto) {
+        if (personRepository.findByUsername(dto.getUsername()).isPresent())
+            throw new PersonAlreadyExistsException("Username already exists");
+
         Optional<Department> department = departmentRepository.findByName(dto.getDepartmentName());
         if (department.isEmpty()) {
             throw new DepartmentNotFoundException("Department not found");
         }
 
+        Optional<Authority> authorityOptional = authorityRepository.findByAuthority("ROLE_USER");
+        if (authorityOptional.isEmpty()) throw new RuntimeException("Authority not found!");
+
         Person person = new Person();
         person.setName(dto.getName());
+        person.setUsername(dto.getUsername());
         person.setEmail(dto.getEmail());
         person.setDepartment(department.get());
+        person.setPassword(passwordEncoder.encode(dto.getPassword()));
+        person.setAuthorities(Set.of(authorityOptional.get()));
 
         return PersonMapper.convertToDTO(personRepository.save(person));
     }
@@ -55,7 +81,11 @@ public class PersonServiceImpl implements PersonService {
     public PersonDTO updatePerson(Long id, PersonDTO dto) {
         Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException("Person not found!"));
 
+        if (personRepository.findByUsername(dto.getUsername()).isPresent())
+            throw new PersonAlreadyExistsException("Username already exists");
+
         person.setName(dto.getName());
+        person.setUsername(dto.getUsername());
         person.setEmail(dto.getEmail());
         person.setPhotoUrl(dto.getPhotoUrl());
 

@@ -5,32 +5,23 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="2025-01-29--0002-person" author="anepretimov">
+    <changeSet id="2025-02-02---0004-person-authorities" author="anepretimov">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="person"/>
+                <tableExists tableName="person_authorities"/>
             </not>
         </preConditions>
 
-        <createTable tableName="person">
+        <createTable tableName="person_authorities">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(100)">
-                <constraints nullable="false"/>
+            <column name="person_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_persauth_person" referencedTableName="person"
+                             referencedColumnNames="id"/>
             </column>
-            <column name="username" type="VARCHAR(100)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="email" type="VARCHAR(100)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="photo_url" type="VARCHAR(100)"/>
-            <column name="password" type="VARCHAR(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="department_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk_person_department" referencedTableName="department"
+            <column name="authorities_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_persauth_authority" referencedTableName="authority"
                              referencedColumnNames="id"/>
             </column>
         </createTable>
