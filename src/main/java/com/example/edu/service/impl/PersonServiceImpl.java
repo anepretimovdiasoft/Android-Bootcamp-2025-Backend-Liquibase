@@ -31,20 +31,6 @@ public class PersonServiceImpl implements PersonService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<PersonDTO> getAllPersons() {
-        return personRepository.findAll().stream()
-                .map(PersonMapper::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public PersonDTO getPersonById(Long id) {
-        return personRepository.findById(id)
-                .map(PersonMapper::convertToDTO)
-                .orElseThrow(() -> new PersonNotFoundException("Person not found!"));
-    }
-
-    @Override
     public PersonDTO getPersonByUsername(String username) {
         Optional<Person> userOptional = personRepository.findByUsername(username);
 
@@ -94,6 +80,20 @@ public class PersonServiceImpl implements PersonService {
         department.ifPresent(person::setDepartment);
 
         return PersonMapper.convertToDTO(personRepository.save(person));
+    }
+
+    @Override
+    public PersonDTO getPersonById(Long id) {
+        return personRepository.findById(id)
+                .map(PersonMapper::convertToDTO)
+                .orElseThrow(() -> new PersonNotFoundException("Person not found!"));
+    }
+
+    @Override
+    public List<PersonDTO> getAllPersons() {
+        return personRepository.findAll().stream()
+                .map(PersonMapper::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
