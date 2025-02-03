@@ -60,7 +60,8 @@ public class PersonServiceImpl implements PersonService {
 
         Optional<Department> department = departmentRepository.findByName(dto.getDepartmentName());
         if (department.isEmpty()) {
-            throw new DepartmentNotFoundException("Department not found");
+            //throw new DepartmentNotFoundException("Department not found");
+            department = departmentRepository.findById(1L);
         }
 
         Optional<Authority> authorityOptional = authorityRepository.findByAuthority("ROLE_USER");
