@@ -4,6 +4,9 @@ import com.example.edu.dto.PersonDTO;
 import com.example.edu.dto.PersonRegisterDto;
 import com.example.edu.service.PersonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,5 +55,13 @@ public class PersonController {
     @GetMapping("/login")
     public ResponseEntity<PersonDTO> login(Authentication authentication) {
         return ResponseEntity.ok(personService.getPersonByUsername(authentication.getName()));
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<PersonDTO>> getAllPersonsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(personService.getAllPersonsPaginated(pageable));
     }
 }
