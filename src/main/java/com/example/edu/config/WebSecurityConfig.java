@@ -28,6 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/api/person/register").permitAll()
                 .antMatchers("/api/person/username/{username}").permitAll()
+                .antMatchers("/api/person/paginated").permitAll()
                 .antMatchers("/api/authority/**").hasAuthority("ROLE_ADMIN")
                 //.antMatchers("/api/person/authority/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/person/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

@@ -36,4 +36,15 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2025-02-05--0002-person" author="anepretimov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="person" indexName="idx_person_name"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="idx_person_name" tableName="person">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
