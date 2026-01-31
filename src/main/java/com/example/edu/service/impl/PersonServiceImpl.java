@@ -14,6 +14,8 @@ import com.example.edu.repository.PersonRepository;
 import com.example.edu.service.PersonService;
 import com.example.edu.utils.PersonMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -99,5 +101,11 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void deletePerson(Long id) {
         personRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<PersonDTO> getAllPersonsPaginated(Pageable pageable) {
+        return personRepository.findAll(pageable)
+                .map(PersonMapper::convertToDTO);
     }
 }
