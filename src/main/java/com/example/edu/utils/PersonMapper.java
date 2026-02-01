@@ -13,7 +13,9 @@ public class PersonMapper {
         dto.setUsername(person.getUsername());
         dto.setEmail(person.getEmail());
         dto.setPhotoUrl(person.getPhotoUrl());
-        dto.setDepartmentName(person.getDepartment().getName());
+        if (person.getDepartment() != null) {
+            dto.setDepartmentName(person.getDepartment().getName());
+        }
         return dto;
     }
 }

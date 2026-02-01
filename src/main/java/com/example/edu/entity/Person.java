@@ -1,9 +1,10 @@
 package com.example.edu.entity;
 
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
 @Data
@@ -26,6 +27,7 @@ public class Person implements UserDetails {
     @Column(name = "photo_url")
     private String photoUrl;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;

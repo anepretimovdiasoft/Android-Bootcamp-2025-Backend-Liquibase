@@ -16,7 +16,7 @@ spring:
       ddl-auto: none
     show-sql: true
 
-  spring-doc:
+  springdoc:
     swagger-ui:
       path: /swagger-ui.html
       operationsSorter: method
