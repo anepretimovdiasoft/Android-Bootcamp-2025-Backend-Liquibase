@@ -3,6 +3,7 @@ package com.example.edu.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,7 +31,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/person/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(httpBasic -> {})
+                .httpBasic(Customizer.withDefaults())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         return http.build();
