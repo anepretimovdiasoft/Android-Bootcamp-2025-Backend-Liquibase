@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Миграции Liquibase — Руководство</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        h1 {
+            color: #2962ff;
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #2962ff;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        h2 {
+            color: #1e4db7;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-left: 4px solid #2962ff;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #444;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .diagram-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        pre {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre;
+            margin: 0;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            color: #f8f8f2;
+        }
+        
+        .code-title {
+            background: #1a1a1a;
+            color: #2962ff;
+            padding: 8px 15px;
+            border-radius: 6px 6px 0 0;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            margin-bottom: -15px;
+        }
+        
+        .code-block.with-title {
+            border-radius: 0 0 6px 6px;
+        }
+        
+        .explanation {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .danger {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #2962ff;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #2962ff;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .analogy-box {
+            background: linear-gradient(135deg, #2962ff 0%, #1e4db7 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        
+        .analogy-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        .summary-box {
+            background: #e3f2fd;
+            border: 2px solid #2962ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .summary-box h3 {
+            color: #1e4db7;
+            margin-top: 0;
+        }
+        
+        ol, ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #2962ff;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #2962ff;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #2962ff;
+            border-radius: 50%;
+        }
+        
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .diagram-box, .code-block {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>🔄 Миграции базы данных с Liquibase</h1>
+<p class="subtitle">Руководство для Android Bootcamp 2025</p>
+
+<h2>1. Зачем нужны миграции?</h2>
+
+<div class="explanation">
+    <strong>Проблема:</strong> Схема базы данных меняется со временем. Новые таблицы, колонки, индексы...
+    Как синхронизировать эти изменения между разработчиками, тестовым и prod-окружением?
+</div>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Проблема без миграций                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   Разработчик A                Разработчик B                Production
+   ─────────────                ─────────────                ──────────
+   
+   БД версия 3                  БД версия 2                  БД версия 1
+   ┌─────────────┐              ┌─────────────┐              ┌─────────────┐
+   │ users       │              │ users       │              │ users       │
+   │ products    │              │ products    │              │             │
+   │ orders ⬅ NEW│              │             │              │             │
+   └─────────────┘              └─────────────┘              └─────────────┘
+   
+   ❌ "У меня работает, а у тебя нет!"
+   ❌ Ручной SQL при деплое
+   ❌ Забыли добавить колонку на проде
+   ❌ Нет истории изменений
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Решение: Миграции Liquibase                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   Git репозиторий содержит:
+   
+   src/main/resources/db.changelog/
+   ├── db.changelog-master.xml        ◀── Главный файл
+   ├── 1.0/
+   │   ├── 001-create-users.xml       ◀── Версия 1
+   │   ├── 002-create-products.xml    ◀── Версия 2
+   │   └── 003-create-orders.xml      ◀── Версия 3
+   └── data/
+       └── 001-insert-users.xml       ◀── Начальные данные
+   
+   ✅ Все разработчики видят одну историю
+   ✅ Миграции применяются автоматически при запуске
+   ✅ Невозможно "забыть" изменение
+   ✅ Откат изменений (rollback)
+</pre>
+</div>
+
+<div class="analogy-box">
+    <h3>📚 Аналогия: Git для базы данных</h3>
+    <div class="diagram-box" style="background: rgba(255,255,255,0.95); color: #333;">
+<pre>
+         GIT (код)                          LIQUIBASE (БД)
+         ─────────                          ──────────────
+         
+    Коммит = снимок кода              ChangeSet = изменение схемы
+    
+    commit abc123                      changeSet id="001"
+    commit def456                      changeSet id="002"
+    commit ghi789                      changeSet id="003"
+         │                                  │
+         ▼                                  ▼
+    История изменений                 История миграций
+    (git log)                         (DATABASECHANGELOG)
+</pre>
+    </div>
+    <p style="margin-top: 15px;">Как Git отслеживает изменения в коде, так Liquibase отслеживает изменения в БД!</p>
+</div>
+
+<h2>2. Как работает Liquibase</h2>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Процесс выполнения миграций                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   Запуск приложения
+         │
+         ▼
+   ┌─────────────────────────────────────────────────────────────────────────┐
+   │                           LIQUIBASE                                      │
+   │  ┌───────────────────────────────────────────────────────────────────┐  │
+   │  │  1. Читает db.changelog-master.xml                                │  │
+   │  │                                                                   │  │
+   │  │  2. Проверяет таблицу DATABASECHANGELOG                          │  │
+   │  │     ┌──────────────────────────────────────────────────────────┐ │  │
+   │  │     │ ID                    │ AUTHOR      │ DATEEXECUTED       │ │  │
+   │  │     │ 001-create-users      │ developer   │ 2025-01-15 10:00   │ │  │
+   │  │     │ 002-create-products   │ developer   │ 2025-01-20 14:30   │ │  │
+   │  │     │ ??? новые миграции    │             │                    │ │  │
+   │  │     └──────────────────────────────────────────────────────────┘ │  │
+   │  │                                                                   │  │
+   │  │  3. Применяет ТОЛЬКО новые changeSets                            │  │
+   │  │                                                                   │  │
+   │  │  4. Записывает выполненные миграции в DATABASECHANGELOG          │  │
+   │  └───────────────────────────────────────────────────────────────────┘  │
+   └─────────────────────────────────────────────────────────────────────────┘
+         │
+         ▼
+   Приложение запущено с актуальной схемой БД
+</pre>
+</div>
+
+<div class="success">
+    <strong>Ключевой принцип:</strong> Каждый changeSet выполняется <strong>только один раз</strong>.
+    Liquibase помнит, какие миграции уже применены, и не повторяет их.
+</div>
+
+<h2>3. Структура проекта</h2>
+
+<div class="diagram-box">
+<pre>
+src/main/resources/
+└── db.changelog/
+    ├── db.changelog-master.xml     ◀── Главный файл (включает все остальные)
+    │
+    ├── 1.0/                        ◀── Структура (DDL)
+    │   ├── 2025-01-29--0001-department.xml
+    │   ├── 2025-01-29--0002-person.xml
+    │   ├── 2025-02-02--0003-authority.xml
+    │   └── 2025-02-02--0004-person-authorities.xml
+    │
+    └── data/                       ◀── Данные (DML)
+        ├── 2025-01-29--0001-department-data.xml
+        ├── 2025-01-29--0002-person-data.xml
+        ├── 2025-02-02--0003-authority-data.xml
+        ├── 2025-02-02--0004-person-authorities-data.xml
+        └── csv/
+            ├── 2025-01-29--0001-department-data.csv
+            └── 2025-01-29--0002-person-data.csv
+</pre>
+</div>
+
+<h3>Конвенция именования</h3>
+
+<div class="code-block">
+<pre>YYYY-MM-DD--NNNN-описание.xml
+
+Примеры:
+2025-01-29--0001-department.xml
+2025-01-29--0002-person.xml
+2025-02-02--0003-authority.xml</pre>
+</div>
+
+<table>
+    <tr>
+        <th>Часть</th>
+        <th>Значение</th>
+        <th>Зачем</th>
+    </tr>
+    <tr>
+        <td><code>YYYY-MM-DD</code></td>
+        <td>Дата создания</td>
+        <td>Хронологический порядок</td>
+    </tr>
+    <tr>
+        <td><code>NNNN</code></td>
+        <td>Порядковый номер</td>
+        <td>Порядок в рамках дня</td>
+    </tr>
+    <tr>
+        <td><code>описание</code></td>
+        <td>Что делает миграция</td>
+        <td>Понятность</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>4. Основные файлы</h2>
+
+<h3>4.1 Master changelog — точка входа</h3>
+
+<div class="code-title">db.changelog-master.xml</div>
+<div class="code-block with-title">
+<pre>&lt;databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"&gt;
+
+    &lt;!-- Структура таблиц (в порядке зависимостей!) --&gt;
+    &lt;include file="db.changelog/1.0/2025-01-29--0001-department.xml"/&gt;
+    &lt;include file="db.changelog/1.0/2025-01-29--0002-person.xml"/&gt;
+    &lt;include file="db.changelog/1.0/2025-02-02--0003-authority.xml"/&gt;
+    &lt;include file="db.changelog/1.0/2025-02-02--0004-person-authorities.xml"/&gt;
+
+    &lt;!-- Начальные данные --&gt;
+    &lt;include file="db.changelog/data/2025-01-29--0001-department-data.xml"/&gt;
+    &lt;include file="db.changelog/data/2025-01-29--0002-person-data.xml"/&gt;
+    &lt;include file="db.changelog/data/2025-02-02--0003-authority-data.xml"/&gt;
+    &lt;include file="db.changelog/data/2025-02-02--0004-person-authorities-data.xml"/&gt;
+
+&lt;/databaseChangeLog&gt;</pre>
+</div>
+
+<div class="warning">
+    <strong>⚠️ Порядок важен!</strong> Если таблица <code>person</code> ссылается на <code>department</code>,
+    то миграция <code>department</code> должна идти первой.
+</div>
+
+<h3>4.2 Создание таблицы (DDL)</h3>
+
+<div class="code-title">2025-01-29--0001-department.xml</div>
+<div class="code-block with-title">
+<pre>&lt;databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="..."&gt;
+
+    &lt;changeSet id="2025-01-29--0001-department" author="anepretimov"&gt;
+        
+        &lt;!-- Проверка: не создавать, если таблица уже есть --&gt;
+        &lt;preConditions onFail="MARK_RAN"&gt;
+            &lt;not&gt;
+                &lt;tableExists tableName="department"/&gt;
+            &lt;/not&gt;
+        &lt;/preConditions&gt;
+
+        &lt;createTable tableName="department"&gt;
+            &lt;column name="id" type="BIGINT" autoIncrement="true"&gt;
+                &lt;constraints primaryKey="true" nullable="false"/&gt;
+            &lt;/column&gt;
+            &lt;column name="name" type="VARCHAR(100)"&gt;
+                &lt;constraints nullable="false" unique="true"/&gt;
+            &lt;/column&gt;
+        &lt;/createTable&gt;
+        
+    &lt;/changeSet&gt;
+&lt;/databaseChangeLog&gt;</pre>
+</div>
+
+<h3>4.3 Таблица со связями (Foreign Key)</h3>
+
+<div class="code-title">2025-01-29--0002-person.xml</div>
+<div class="code-block with-title">
+<pre>&lt;changeSet id="2025-01-29--0002-person" author="anepretimov"&gt;
+    &lt;createTable tableName="person"&gt;
+        &lt;column name="id" type="BIGINT" autoIncrement="true"&gt;
+            &lt;constraints primaryKey="true" nullable="false"/&gt;
+        &lt;/column&gt;
+        &lt;column name="name" type="VARCHAR(100)"&gt;
+            &lt;constraints nullable="false"/&gt;
+        &lt;/column&gt;
+        &lt;column name="username" type="VARCHAR(50)"&gt;
+            &lt;constraints nullable="false" unique="true"/&gt;
+        &lt;/column&gt;
+        &lt;column name="email" type="VARCHAR(100)"/&gt;
+        &lt;column name="password" type="VARCHAR(255)"&gt;
+            &lt;constraints nullable="false"/&gt;
+        &lt;/column&gt;
+        &lt;column name="photo_url" type="VARCHAR(255)"/&gt;
+        
+        &lt;!-- Внешний ключ на department --&gt;
+        &lt;column name="department_id" type="BIGINT"&gt;
+            &lt;constraints nullable="false"/&gt;
+        &lt;/column&gt;
+    &lt;/createTable&gt;
+
+    &lt;!-- Создание Foreign Key --&gt;
+    &lt;addForeignKeyConstraint 
+        baseTableName="person" 
+        baseColumnNames="department_id"
+        referencedTableName="department" 
+        referencedColumnNames="id"
+        constraintName="fk_person_department"/&gt;
+&lt;/changeSet&gt;</pre>
+</div>
+
+<h3>4.4 Связь Many-to-Many</h3>
+
+<div class="code-title">2025-02-02--0004-person-authorities.xml</div>
+<div class="code-block with-title">
+<pre>&lt;changeSet id="2025-02-02--0004-person-authorities" author="anepretimov"&gt;
+    
+    &lt;!-- Таблица связи для Many-to-Many --&gt;
+    &lt;createTable tableName="person_authorities"&gt;
+        &lt;column name="person_id" type="BIGINT"&gt;
+            &lt;constraints nullable="false"/&gt;
+        &lt;/column&gt;
+        &lt;column name="authorities_id" type="BIGINT"&gt;
+            &lt;constraints nullable="false"/&gt;
+        &lt;/column&gt;
+    &lt;/createTable&gt;
+
+    &lt;!-- Составной первичный ключ --&gt;
+    &lt;addPrimaryKey 
+        tableName="person_authorities" 
+        columnNames="person_id, authorities_id"/&gt;
+
+    &lt;!-- Внешние ключи --&gt;
+    &lt;addForeignKeyConstraint 
+        baseTableName="person_authorities" 
+        baseColumnNames="person_id"
+        referencedTableName="person" 
+        referencedColumnNames="id"
+        constraintName="fk_pa_person"/&gt;
+
+    &lt;addForeignKeyConstraint 
+        baseTableName="person_authorities" 
+        baseColumnNames="authorities_id"
+        referencedTableName="authority" 
+        referencedColumnNames="id"
+        constraintName="fk_pa_authority"/&gt;
+        
+&lt;/changeSet&gt;</pre>
+</div>
+
+<div class="page-break"></div>
+
+<h3>4.5 Загрузка данных из CSV</h3>
+
+<div class="code-title">2025-01-29--0001-department-data.xml</div>
+<div class="code-block with-title">
+<pre>&lt;databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" ...&gt;
+
+    &lt;changeSet id="2025-01-29--0001-department-data" author="anepretimov"&gt;
+        &lt;loadData 
+            tableName="department" 
+            file="db.changelog/data/csv/2025-01-29--0001-department-data.csv"
+            separator=";"
+            quotchar='"'
+            encoding="UTF-8"/&gt;
+    &lt;/changeSet&gt;
+
+&lt;/databaseChangeLog&gt;</pre>
+</div>
+
+<div class="code-title">2025-01-29--0001-department-data.csv</div>
+<div class="code-block with-title">
+<pre>id;name
+1;Engineering
+2;Marketing
+3;Sales
+4;HR</pre>
+</div>
+
+<div class="success">
+    <strong>Преимущество CSV:</strong> Легко редактировать в Excel/Google Sheets.
+    Удобно для больших объёмов начальных данных.
+</div>
+
+<h2>5. Основные теги Liquibase</h2>
+
+<table>
+    <tr>
+        <th>Тег</th>
+        <th>Назначение</th>
+        <th>Пример</th>
+    </tr>
+    <tr>
+        <td><code>&lt;createTable&gt;</code></td>
+        <td>Создать таблицу</td>
+        <td>CREATE TABLE</td>
+    </tr>
+    <tr>
+        <td><code>&lt;addColumn&gt;</code></td>
+        <td>Добавить колонку</td>
+        <td>ALTER TABLE ADD COLUMN</td>
+    </tr>
+    <tr>
+        <td><code>&lt;dropColumn&gt;</code></td>
+        <td>Удалить колонку</td>
+        <td>ALTER TABLE DROP COLUMN</td>
+    </tr>
+    <tr>
+        <td><code>&lt;renameColumn&gt;</code></td>
+        <td>Переименовать колонку</td>
+        <td>ALTER TABLE RENAME COLUMN</td>
+    </tr>
+    <tr>
+        <td><code>&lt;modifyDataType&gt;</code></td>
+        <td>Изменить тип</td>
+        <td>ALTER TABLE ALTER COLUMN</td>
+    </tr>
+    <tr>
+        <td><code>&lt;addForeignKeyConstraint&gt;</code></td>
+        <td>Добавить FK</td>
+        <td>ALTER TABLE ADD CONSTRAINT</td>
+    </tr>
+    <tr>
+        <td><code>&lt;createIndex&gt;</code></td>
+        <td>Создать индекс</td>
+        <td>CREATE INDEX</td>
+    </tr>
+    <tr>
+        <td><code>&lt;loadData&gt;</code></td>
+        <td>Загрузить данные из CSV</td>
+        <td>INSERT INTO (множество)</td>
+    </tr>
+    <tr>
+        <td><code>&lt;insert&gt;</code></td>
+        <td>Вставить одну запись</td>
+        <td>INSERT INTO</td>
+    </tr>
+    <tr>
+        <td><code>&lt;sql&gt;</code></td>
+        <td>Произвольный SQL</td>
+        <td>Любой SQL запрос</td>
+    </tr>
+</table>
+
+<h2>6. Атрибуты changeSet</h2>
+
+<div class="code-block">
+<pre>&lt;changeSet 
+    id="уникальный-идентификатор"      &lt;!-- Обязательно --&gt;
+    author="имя-автора"                &lt;!-- Обязательно --&gt;
+    runOnChange="true"                 &lt;!-- Перезапускать при изменении --&gt;
+    runAlways="true"                   &lt;!-- Запускать каждый раз --&gt;
+    context="dev,test"                 &lt;!-- Только для указанных профилей --&gt;
+    dbms="postgresql"                  &lt;!-- Только для указанной СУБД --&gt;
+&gt;</pre>
+</div>
+
+<table>
+    <tr>
+        <th>Атрибут</th>
+        <th>Описание</th>
+        <th>Когда использовать</th>
+    </tr>
+    <tr>
+        <td><code>id</code></td>
+        <td>Уникальный идентификатор</td>
+        <td>Всегда (обязательно)</td>
+    </tr>
+    <tr>
+        <td><code>author</code></td>
+        <td>Автор изменения</td>
+        <td>Всегда (обязательно)</td>
+    </tr>
+    <tr>
+        <td><code>runOnChange</code></td>
+        <td>Перезапуск при изменении файла</td>
+        <td>Для views, stored procedures</td>
+    </tr>
+    <tr>
+        <td><code>context</code></td>
+        <td>Выполнять только в контексте</td>
+        <td>Тестовые данные только для dev</td>
+    </tr>
+    <tr>
+        <td><code>dbms</code></td>
+        <td>Только для указанной СУБД</td>
+        <td>Специфичный SQL для PostgreSQL</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>7. Preconditions — условия выполнения</h2>
+
+<div class="explanation">
+    <strong>Preconditions</strong> — проверки перед выполнением changeSet.
+    Позволяют избежать ошибок при повторном запуске.
+</div>
+
+<div class="code-block">
+<pre>&lt;changeSet id="add-phone-column" author="developer"&gt;
+    &lt;preConditions onFail="MARK_RAN"&gt;
+        &lt;not&gt;
+            &lt;columnExists tableName="person" columnName="phone"/&gt;
+        &lt;/not&gt;
+    &lt;/preConditions&gt;
+    
+    &lt;addColumn tableName="person"&gt;
+        &lt;column name="phone" type="VARCHAR(20)"/&gt;
+    &lt;/addColumn&gt;
+&lt;/changeSet&gt;</pre>
+</div>
+
+<table>
+    <tr>
+        <th>onFail</th>
+        <th>Поведение</th>
+    </tr>
+    <tr>
+        <td><code>HALT</code></td>
+        <td>Остановить выполнение (по умолчанию)</td>
+    </tr>
+    <tr>
+        <td><code>MARK_RAN</code></td>
+        <td>Пометить как выполненный, продолжить</td>
+    </tr>
+    <tr>
+        <td><code>CONTINUE</code></td>
+        <td>Пропустить, продолжить</td>
+    </tr>
+    <tr>
+        <td><code>WARN</code></td>
+        <td>Предупреждение, продолжить</td>
+    </tr>
+</table>
+
+<h3>Популярные проверки</h3>
+
+<div class="code-block">
+<pre>&lt;!-- Таблица существует --&gt;
+&lt;tableExists tableName="person"/&gt;
+
+&lt;!-- Таблица НЕ существует --&gt;
+&lt;not&gt;&lt;tableExists tableName="old_table"/&gt;&lt;/not&gt;
+
+&lt;!-- Колонка существует --&gt;
+&lt;columnExists tableName="person" columnName="email"/&gt;
+
+&lt;!-- Индекс существует --&gt;
+&lt;indexExists indexName="idx_person_email"/&gt;
+
+&lt;!-- Конкретная СУБД --&gt;
+&lt;dbms type="postgresql"/&gt;
+
+&lt;!-- Несколько условий (AND) --&gt;
+&lt;and&gt;
+    &lt;tableExists tableName="person"/&gt;
+    &lt;not&gt;&lt;columnExists tableName="person" columnName="phone"/&gt;&lt;/not&gt;
+&lt;/and&gt;</pre>
+</div>
+
+<h2>8. Конфигурация Spring Boot</h2>
+
+<div class="code-title">application.yml</div>
+<div class="code-block with-title">
+<pre>spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bootcamp_db
+    username: bootcamp
+    password: bootcamp123
+  
+  liquibase:
+    enabled: true                                          # Включить Liquibase
+    change-log: classpath:db.changelog/db.changelog-master.xml  # Путь к master
+    # contexts: dev,test                                   # Опционально: контексты
+    # drop-first: true                                     # ОПАСНО: сбросить БД
+  
+  jpa:
+    hibernate:
+      ddl-auto: none    # ⚠️ ВАЖНО: Liquibase управляет схемой, не Hibernate!</pre>
+</div>
+
+<div class="danger">
+    <strong>⚠️ Важно:</strong> Когда используете Liquibase, установите <code>ddl-auto: none</code>!
+    Иначе Hibernate и Liquibase будут конфликтовать при управлении схемой.
+</div>
+
+<div class="code-title">pom.xml</div>
+<div class="code-block with-title">
+<pre>&lt;dependency&gt;
+    &lt;groupId&gt;org.liquibase&lt;/groupId&gt;
+    &lt;artifactId&gt;liquibase-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</pre>
+</div>
+
+<h2>9. Таблицы Liquibase в БД</h2>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        DATABASECHANGELOG                                     │
+│                    (История выполненных миграций)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ID                          │ AUTHOR      │ FILENAME           │ DATEEXEC  │
+├─────────────────────────────┼─────────────┼────────────────────┼───────────┤
+│ 2025-01-29--0001-department │ anepretimov │ 1.0/2025-01-29...  │ 2025-01-29│
+│ 2025-01-29--0002-person     │ anepretimov │ 1.0/2025-01-29...  │ 2025-01-29│
+│ 2025-02-02--0003-authority  │ anepretimov │ 1.0/2025-02-02...  │ 2025-02-02│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        DATABASECHANGELOGLOCK                                 │
+│                      (Блокировка при выполнении)                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ID │ LOCKED │ LOCKGRANTED         │ LOCKEDBY                               │
+├────┼────────┼─────────────────────┼────────────────────────────────────────┤
+│ 1  │ false  │ 2025-02-02 10:00:00 │ hostname (192.168.1.100)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<div class="page-break"></div>
+
+<h2>10. Best Practices</h2>
+
+<div class="success">
+    <h3>✅ Делайте</h3>
+    <ul>
+        <li><strong>Один changeSet = одно логическое изменение</strong></li>
+        <li>Используйте понятные id с датой</li>
+        <li>Добавляйте preConditions для идемпотентности</li>
+        <li>Храните DDL и DML в разных папках</li>
+        <li>Тестируйте миграции на копии prod-базы</li>
+    </ul>
+</div>
+
+<div class="danger">
+    <h3>❌ Не делайте</h3>
+    <ul>
+        <li><strong>Никогда не редактируйте выполненные changeSets!</strong></li>
+        <li>Не удаляйте старые миграции</li>
+        <li>Не используйте <code>drop-first: true</code> на prod</li>
+        <li>Не полагайтесь на порядок файлов в папке</li>
+    </ul>
+</div>
+
+<div class="warning">
+    <strong>Если нужно изменить выполненный changeSet:</strong>
+    <ol>
+        <li>Создайте НОВЫЙ changeSet с изменениями</li>
+        <li>Например: добавить колонку → новый changeSet с <code>&lt;addColumn&gt;</code></li>
+        <li>Удалить колонку → новый changeSet с <code>&lt;dropColumn&gt;</code></li>
+    </ol>
+</div>
+
+<h2>11. Команды для отладки</h2>
+
+<div class="code-block">
+<pre># Посмотреть статус миграций
+mvn liquibase:status
+
+# Выполнить миграции вручную
+mvn liquibase:update
+
+# Откатить последний changeSet
+mvn liquibase:rollbackCount -Dliquibase.rollbackCount=1
+
+# Сгенерировать SQL без выполнения
+mvn liquibase:updateSQL
+
+# Очистить checksum (если файл изменился)
+mvn liquibase:clearCheckSums</pre>
+</div>
+
+<div class="summary-box">
+    <h3>📋 Резюме</h3>
+    <ol>
+        <li><strong>Liquibase</strong> — инструмент для версионирования схемы БД</li>
+        <li><strong>changeSet</strong> — единица изменения (выполняется один раз)</li>
+        <li><strong>db.changelog-master.xml</strong> — главный файл, включает все миграции</li>
+        <li><strong>preConditions</strong> — условия для безопасного выполнения</li>
+        <li><strong>DATABASECHANGELOG</strong> — таблица с историей миграций</li>
+        <li><strong>Правило:</strong> Никогда не редактируйте выполненные changeSets!</li>
+    </ol>
+    
+    <h3 style="margin-top: 20px;">🚀 Добавление новой миграции</h3>
+    <div class="code-block" style="background: #1a1a1a;">
+<pre># 1. Создайте файл в db.changelog/1.0/
+2025-02-10--0005-add-phone-to-person.xml
+
+# 2. Добавьте include в db.changelog-master.xml
+&lt;include file="db.changelog/1.0/2025-02-10--0005-add-phone-to-person.xml"/&gt;
+
+# 3. Перезапустите приложение — миграция выполнится автоматически</pre>
+    </div>
+</div>
+
+<hr style="margin-top: 40px;">
+<p style="text-align: center; color: #666; margin-top: 20px;">
+    <em>Android Bootcamp 2025 — Backend Development</em>
+</p>
+
+</body>
+</html>

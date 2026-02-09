@@ -1,13 +1,16 @@
 version: '3.8'
 
+# ⚠️ В production используйте .env файл для секретов!
+# Скопируйте .env.example в .env и задайте свои значения
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: bootcamp-postgres
     environment:
-      POSTGRES_DB: bootcamp_db
-      POSTGRES_USER: bootcamp
-      POSTGRES_PASSWORD: bootcamp123
+      POSTGRES_DB: ${POSTGRES_DB:-bootcamp_db}
+      POSTGRES_USER: ${POSTGRES_USER:-bootcamp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bootcamp123}
     ports:
       - "5432:5432"
     volumes:
@@ -27,9 +30,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bootcamp_db
-      SPRING_DATASOURCE_USERNAME: bootcamp
-      SPRING_DATASOURCE_PASSWORD: bootcamp123
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-bootcamp_db}
+      DB_USERNAME: ${POSTGRES_USER:-bootcamp}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-bootcamp123}
     depends_on:
       postgres:
         condition: service_healthy
