@@ -13,6 +13,7 @@ import com.example.edu.repository.DepartmentRepository;
 import com.example.edu.repository.PersonRepository;
 import com.example.edu.service.PersonService;
 import com.example.edu.utils.PersonMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,14 +43,14 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public PersonDTO createPerson(PersonRegisterDto dto) {
         if (personRepository.findByUsername(dto.getUsername()).isPresent())
             throw new PersonAlreadyExistsException("Username already exists");
 
         Optional<Department> department = departmentRepository.findByName(dto.getDepartmentName());
         if (department.isEmpty()) {
-            //throw new DepartmentNotFoundException("Department not found");
-            department = departmentRepository.findById(1L);
+            throw new DepartmentNotFoundException("Department not found");
         }
 
         Optional<Authority> authorityOptional = authorityRepository.findByAuthority("ROLE_USER");
@@ -67,12 +68,14 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public PersonDTO updatePerson(Long id, PersonDTO dto) {
         Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException("Person not found!"));
 
-        if (personRepository.findByUsername(dto.getUsername()).isPresent())
+        Optional<Person> existingWithUsername = personRepository.findByUsername(dto.getUsername());
+        if (existingWithUsername.isPresent() && !existingWithUsername.get().getId().equals(id)) {
             throw new PersonAlreadyExistsException("Username already exists");
-
+        }
         person.setName(dto.getName());
         person.setUsername(dto.getUsername());
         person.setEmail(dto.getEmail());
@@ -99,7 +102,11 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public void deletePerson(Long id) {
+        if (!personRepository.existsById(id)) {
+            throw new PersonNotFoundException("Person not found!");
+        }
         personRepository.deleteById(id);
     }
 

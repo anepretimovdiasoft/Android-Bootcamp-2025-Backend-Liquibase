@@ -3,6 +3,7 @@ package com.example.edu.controller;
 import com.example.edu.dto.PersonDTO;
 import com.example.edu.dto.PersonRegisterDto;
 import com.example.edu.service.PersonService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,12 +32,12 @@ public class PersonController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<PersonDTO> createPerson(@RequestBody PersonRegisterDto dto) {
+    public ResponseEntity<PersonDTO> createPerson(@Valid @RequestBody PersonRegisterDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonDTO> updatePerson(@PathVariable Long id, @RequestBody PersonDTO dto) {
+    public ResponseEntity<PersonDTO> updatePerson(@PathVariable Long id, @Valid @RequestBody PersonDTO dto) {
         return ResponseEntity.ok(personService.updatePerson(id, dto));
     }
 

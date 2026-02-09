@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Основы Spring Boot — Руководство</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        
+        h1 {
+            color: #6db33f;
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #6db33f;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        h2 {
+            color: #5a9a32;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-left: 4px solid #6db33f;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #444;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .diagram-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        pre {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre;
+            margin: 0;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            color: #f8f8f2;
+        }
+        
+        .code-title {
+            background: #1a1a1a;
+            color: #6db33f;
+            padding: 8px 15px;
+            border-radius: 6px 6px 0 0;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            margin-bottom: -15px;
+        }
+        
+        .code-block.with-title {
+            border-radius: 0 0 6px 6px;
+        }
+        
+        .explanation {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #6db33f;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #6db33f;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .analogy-box {
+            background: linear-gradient(135deg, #6db33f 0%, #5a9a32 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        
+        .analogy-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        .summary-box {
+            background: #e8f5e9;
+            border: 2px solid #6db33f;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .summary-box h3 {
+            color: #5a9a32;
+            margin-top: 0;
+        }
+        
+        ol, ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .layer-box {
+            border: 2px solid #6db33f;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .layer-header {
+            background: #6db33f;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+        
+        .layer-content {
+            padding: 15px;
+            background: #f8fff8;
+        }
+        
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .diagram-box, .code-block {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>🍃 Основы Spring Boot</h1>
+<p class="subtitle">Руководство для Android Bootcamp 2025</p>
+
+<h2>1. Что такое Spring Boot?</h2>
+
+<div class="explanation">
+    <strong>Простое объяснение:</strong> Spring Boot — это <strong>фреймворк</strong>, который позволяет 
+    быстро создавать production-ready приложения на Java. Он берёт на себя всю рутинную настройку,
+    чтобы вы могли сосредоточиться на бизнес-логике.
+</div>
+
+<h3>Spring vs Spring Boot</h3>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Spring Framework vs Spring Boot                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+        SPRING FRAMEWORK                         SPRING BOOT
+        ────────────────                         ───────────
+        
+   ┌──────────────────────────┐           ┌──────────────────────────┐
+   │  Мощный, но требует      │           │  "Spring с батарейками   │
+   │  много настройки:        │           │   в комплекте":          │
+   │                          │           │                          │
+   │  • XML-конфигурация      │           │  • Автоконфигурация      │
+   │  • Ручной выбор версий   │    ──▶    │  • Стартеры (starters)   │
+   │  • Настройка сервера     │           │  • Встроенный сервер     │
+   │  • Много boilerplate     │           │  • Минимум кода          │
+   │                          │           │                          │
+   └──────────────────────────┘           └──────────────────────────┘
+   
+   ❌ 100+ строк конфигурации              ✅ Работает "из коробки"
+   ❌ Долгий старт проекта                 ✅ Создание за 5 минут
+</pre>
+</div>
+
+<div class="analogy-box">
+    <h3>🏠 Аналогия: Строительство дома</h3>
+    <div class="diagram-box" style="background: rgba(255,255,255,0.95); color: #333;">
+<pre>
+    Spring Framework                      Spring Boot
+    ────────────────                      ───────────
+    
+    🧱 Кирпичи                            🏠 Готовый каркасный дом
+    🪵 Доски                              
+    🔩 Гвозди                             Уже есть:
+    📐 Чертежи                            • Фундамент
+                                          • Стены
+    Нужно самому:                         • Крыша
+    • Заложить фундамент                  • Коммуникации
+    • Возвести стены
+    • Провести коммуникации               Вам остаётся:
+    • ...                                 • Расставить мебель
+                                          • Повесить картины
+                                          (написать бизнес-логику)
+</pre>
+    </div>
+</div>
+
+<h2>2. Архитектура приложения</h2>
+
+<h3>Слоистая архитектура (Layered Architecture)</h3>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            HTTP Request от клиента                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            🌐 CONTROLLER LAYER                              │
+│                              (@RestController)                               │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  • Принимает HTTP-запросы                                              │ │
+│  │  • Валидирует входные данные (@Valid)                                  │ │
+│  │  • Возвращает HTTP-ответы (ResponseEntity)                             │ │
+│  │  • НЕ содержит бизнес-логику!                                          │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            ⚙️ SERVICE LAYER                                 │
+│                               (@Service)                                     │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  • Бизнес-логика приложения                                            │ │
+│  │  • Транзакции (@Transactional)                                         │ │
+│  │  • Валидация бизнес-правил                                             │ │
+│  │  • Оркестрация между репозиториями                                     │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           💾 REPOSITORY LAYER                               │
+│                             (@Repository)                                    │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  • Работа с базой данных                                               │ │
+│  │  • CRUD операции                                                       │ │
+│  │  • Spring Data JPA методы                                              │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             🗄️ DATABASE                                     │
+│                         (PostgreSQL / H2)                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+</pre>
+</div>
+
+<div class="page-break"></div>
+
+<h2>3. Ключевые компоненты</h2>
+
+<h3>3.1 Entity — сущность базы данных</h3>
+
+<div class="info">
+    <strong>Entity</strong> — это Java-класс, который соответствует таблице в базе данных.
+    Каждый экземпляр класса = одна строка в таблице.
+</div>
+
+<div class="code-title">Person.java</div>
+<div class="code-block with-title">
+<pre>@Data                              // Lombok: геттеры, сеттеры, toString
+@Entity                            // JPA: это сущность БД
+@Table(name = "person")            // Имя таблицы
+public class Person {
+    
+    @Id                            // Первичный ключ
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Автоинкремент
+    private Long id;
+    
+    @Column(name = "name")         // Колонка в таблице
+    private String name;
+    
+    @Column(name = "email")
+    private String email;
+    
+    @ManyToOne                     // Связь "многие к одному"
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
+    @ManyToMany(fetch = FetchType.EAGER)  // Связь "многие ко многим"
+    private Set&lt;Authority&gt; authorities;
+}</pre>
+</div>
+
+<h3>3.2 Repository — доступ к данным</h3>
+
+<div class="info">
+    <strong>Repository</strong> — интерфейс для работы с БД. Spring Data JPA автоматически 
+    создаёт реализацию на основе имён методов!
+</div>
+
+<div class="code-title">PersonRepository.java</div>
+<div class="code-block with-title">
+<pre>@Repository
+public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+    
+    // Spring сам создаст SQL: SELECT * FROM person WHERE username = ?
+    Optional&lt;Person&gt; findByUsername(String username);
+    
+    // SELECT * FROM person WHERE email = ?
+    Optional&lt;Person&gt; findByEmail(String email);
+    
+    // SELECT * FROM person WHERE name LIKE '%keyword%'
+    List&lt;Person&gt; findByNameContaining(String keyword);
+    
+    // Кастомный запрос
+    @Query("SELECT p FROM Person p WHERE p.department.name = :deptName")
+    List&lt;Person&gt; findByDepartmentName(@Param("deptName") String deptName);
+}</pre>
+</div>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Магия Spring Data JPA — Query Methods                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   Имя метода                              Сгенерированный SQL
+   ──────────                              ───────────────────
+   
+   findByUsername(String)          ──▶     WHERE username = ?
+   findByEmailAndName(String, String) ──▶  WHERE email = ? AND name = ?
+   findByAgeGreaterThan(int)       ──▶     WHERE age > ?
+   findByNameContaining(String)    ──▶     WHERE name LIKE '%?%'
+   findByActiveTrue()              ──▶     WHERE active = true
+   findByOrderByNameAsc()          ──▶     ORDER BY name ASC
+   countByDepartmentId(Long)       ──▶     SELECT COUNT(*) WHERE department_id = ?
+</pre>
+</div>
+
+<h3>3.3 Service — бизнес-логика</h3>
+
+<div class="info">
+    <strong>Service</strong> — слой, где живёт бизнес-логика. Здесь проверяются правила,
+    выполняются транзакции, координируется работа нескольких репозиториев.
+</div>
+
+<div class="code-title">PersonServiceImpl.java</div>
+<div class="code-block with-title">
+<pre>@Service
+@RequiredArgsConstructor           // Lombok: конструктор для final полей
+public class PersonServiceImpl implements PersonService {
+    
+    private final PersonRepository personRepository;
+    private final DepartmentRepository departmentRepository;
+    private final PasswordEncoder passwordEncoder;
+    
+    @Override
+    @Transactional                 // Всё в одной транзакции
+    public PersonDTO createPerson(PersonRegisterDto dto) {
+        // Бизнес-правило: username должен быть уникальным
+        if (personRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new PersonAlreadyExistsException("Username already exists");
+        }
+        
+        // Найти департамент
+        Department department = departmentRepository
+            .findByName(dto.getDepartmentName())
+            .orElseThrow(() -> new DepartmentNotFoundException("Not found"));
+        
+        // Создать сущность
+        Person person = new Person();
+        person.setName(dto.getName());
+        person.setUsername(dto.getUsername());
+        person.setPassword(passwordEncoder.encode(dto.getPassword()));  // Хеширование!
+        person.setDepartment(department);
+        
+        // Сохранить и вернуть DTO
+        return PersonMapper.toDto(personRepository.save(person));
+    }
+}</pre>
+</div>
+
+<h3>3.4 Controller — HTTP endpoints</h3>
+
+<div class="info">
+    <strong>Controller</strong> — точка входа для HTTP-запросов. Принимает данные,
+    вызывает сервис, возвращает ответ.
+</div>
+
+<div class="code-title">PersonController.java</div>
+<div class="code-block with-title">
+<pre>@RestController                    // REST API контроллер
+@RequestMapping("/api/person")     // Базовый путь
+@RequiredArgsConstructor
+public class PersonController {
+    
+    private final PersonService personService;
+    
+    @PostMapping("/register")      // POST /api/person/register
+    public ResponseEntity&lt;PersonDTO&gt; createPerson(
+            @Valid @RequestBody PersonRegisterDto dto) {  // Валидация входных данных
+        return ResponseEntity
+            .status(HttpStatus.CREATED)   // HTTP 201
+            .body(personService.createPerson(dto));
+    }
+    
+    @GetMapping("/{id}")           // GET /api/person/123
+    public ResponseEntity&lt;PersonDTO&gt; getPersonById(@PathVariable Long id) {
+        return ResponseEntity.ok(personService.getPersonById(id));
+    }
+    
+    @PutMapping("/{id}")           // PUT /api/person/123
+    public ResponseEntity&lt;PersonDTO&gt; updatePerson(
+            @PathVariable Long id,
+            @Valid @RequestBody PersonDTO dto) {
+        return ResponseEntity.ok(personService.updatePerson(id, dto));
+    }
+    
+    @DeleteMapping("/{id}")        // DELETE /api/person/123
+    public ResponseEntity&lt;Void&gt; deletePerson(@PathVariable Long id) {
+        personService.deletePerson(id);
+        return ResponseEntity.noContent().build();  // HTTP 204
+    }
+}</pre>
+</div>
+
+<div class="page-break"></div>
+
+<h2>4. HTTP методы и REST</h2>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              REST API Conventions                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   HTTP Метод     URL                    Действие              Аннотация
+   ───────────    ───                    ────────              ─────────
+   
+   GET            /api/person            Получить всех         @GetMapping
+   GET            /api/person/123        Получить одного       @GetMapping("/{id}")
+   POST           /api/person            Создать нового        @PostMapping
+   PUT            /api/person/123        Обновить полностью    @PutMapping("/{id}")
+   PATCH          /api/person/123        Обновить частично     @PatchMapping("/{id}")
+   DELETE         /api/person/123        Удалить               @DeleteMapping("/{id}")
+</pre>
+</div>
+
+<table>
+    <tr>
+        <th>HTTP Код</th>
+        <th>Значение</th>
+        <th>Когда использовать</th>
+    </tr>
+    <tr>
+        <td><strong>200</strong> OK</td>
+        <td>Успешно</td>
+        <td>GET, PUT — данные получены/обновлены</td>
+    </tr>
+    <tr>
+        <td><strong>201</strong> Created</td>
+        <td>Создано</td>
+        <td>POST — ресурс успешно создан</td>
+    </tr>
+    <tr>
+        <td><strong>204</strong> No Content</td>
+        <td>Нет содержимого</td>
+        <td>DELETE — ресурс удалён</td>
+    </tr>
+    <tr>
+        <td><strong>400</strong> Bad Request</td>
+        <td>Плохой запрос</td>
+        <td>Ошибка валидации</td>
+    </tr>
+    <tr>
+        <td><strong>401</strong> Unauthorized</td>
+        <td>Не авторизован</td>
+        <td>Требуется аутентификация</td>
+    </tr>
+    <tr>
+        <td><strong>403</strong> Forbidden</td>
+        <td>Запрещено</td>
+        <td>Нет прав доступа</td>
+    </tr>
+    <tr>
+        <td><strong>404</strong> Not Found</td>
+        <td>Не найдено</td>
+        <td>Ресурс не существует</td>
+    </tr>
+    <tr>
+        <td><strong>500</strong> Server Error</td>
+        <td>Ошибка сервера</td>
+        <td>Непредвиденная ошибка</td>
+    </tr>
+</table>
+
+<h2>5. DTO — Data Transfer Object</h2>
+
+<div class="explanation">
+    <strong>DTO</strong> — объект для передачи данных между слоями. Позволяет не выставлять
+    Entity напрямую (скрыть пароли, внутренние поля).
+</div>
+
+<div class="diagram-box">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Entity vs DTO                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+        Entity (Person)                        DTO (PersonDTO)
+        ───────────────                        ───────────────
+   ┌─────────────────────┐              ┌─────────────────────┐
+   │  id: Long           │              │  id: Long           │
+   │  name: String       │      ──▶     │  name: String       │
+   │  username: String   │   Mapper     │  username: String   │
+   │  email: String      │              │  email: String      │
+   │  password: String ⛔│              │  departmentName: Str│
+   │  department: Dept   │              └─────────────────────┘
+   │  authorities: Set   │
+   └─────────────────────┘
+   
+   ⛔ Пароль НЕ передаётся наружу!
+   ✅ Вместо объекта Department — просто имя
+</pre>
+</div>
+
+<div class="code-title">PersonDTO.java</div>
+<div class="code-block with-title">
+<pre>@Data
+public class PersonDTO {
+    private Long id;
+    
+    @NotBlank(message = "Name is required")
+    private String name;
+    
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
+    
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
+    
+    private String photoUrl;
+    private String departmentName;
+}</pre>
+</div>
+
+<h2>6. Обработка исключений</h2>
+
+<div class="info">
+    <strong>@ControllerAdvice</strong> — глобальный обработчик исключений.
+    Перехватывает ошибки из всех контроллеров и возвращает красивый ответ.
+</div>
+
+<div class="code-title">GlobalExceptionHandler.java</div>
+<div class="code-block with-title">
+<pre>@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(PersonNotFoundException.class)
+    public ResponseEntity&lt;String&gt; handlePersonNotFound(PersonNotFoundException e) {
+        return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.NOT_FOUND);  // 404
+    }
+
+    @ExceptionHandler(PersonAlreadyExistsException.class)
+    public ResponseEntity&lt;String&gt; handlePersonExists(PersonAlreadyExistsException e) {
+        return new ResponseEntity&lt;&gt;(e.getMessage(), HttpStatus.BAD_REQUEST);  // 400
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; handleValidation(
+            MethodArgumentNotValidException e) {
+        Map&lt;String, String&gt; errors = new HashMap&lt;&gt;();
+        e.getBindingResult().getFieldErrors().forEach(error -&gt;
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+        return new ResponseEntity&lt;&gt;(errors, HttpStatus.BAD_REQUEST);
+    }
+}</pre>
+</div>
+
+<div class="page-break"></div>
+
+<h2>7. Конфигурация приложения</h2>
+
+<h3>pom.xml — зависимости</h3>
+
+<div class="code-title">pom.xml</div>
+<div class="code-block with-title">
+<pre>&lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;3.5.5&lt;/version&gt;
+&lt;/parent&gt;
+
+&lt;dependencies&gt;
+    &lt;!-- Web: REST API, Tomcat --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- JPA: работа с БД через Hibernate --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Валидация: @NotBlank, @Email, @Size --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Security: аутентификация и авторизация --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Lombok: меньше boilerplate кода --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- База данных --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</pre>
+</div>
+
+<h3>application.yml — настройки</h3>
+
+<div class="code-title">application.yml</div>
+<div class="code-block with-title">
+<pre>spring:
+  # Подключение к БД
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bootcamp_db
+    username: bootcamp
+    password: bootcamp123
+  
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none      # Не трогать схему (Liquibase управляет)
+    show-sql: true        # Логировать SQL запросы
+  
+  # Миграции БД
+  liquibase:
+    enabled: true
+    change-log: classpath:db.changelog/db.changelog-master.xml
+
+# Swagger документация
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html</pre>
+</div>
+
+<h2>8. Структура проекта</h2>
+
+<div class="diagram-box">
+<pre>
+src/main/java/com/example/edu/
+├── EduApplication.java           # Точка входа @SpringBootApplication
+├── config/
+│   └── WebSecurityConfig.java    # Настройка безопасности
+├── controller/
+│   ├── PersonController.java     # REST endpoints для Person
+│   └── AuthorityController.java  # REST endpoints для Authority
+├── dto/
+│   ├── PersonDTO.java            # Данные для ответа
+│   └── PersonRegisterDto.java    # Данные для регистрации
+├── entity/
+│   ├── Person.java               # JPA сущность
+│   ├── Department.java
+│   └── Authority.java
+├── exception/
+│   ├── PersonNotFoundException.java
+│   ├── PersonAlreadyExistsException.java
+│   └── handler/
+│       └── GlobalExceptionHandler.java
+├── repository/
+│   ├── PersonRepository.java     # Доступ к данным
+│   └── DepartmentRepository.java
+├── service/
+│   ├── PersonService.java        # Интерфейс
+│   └── impl/
+│       └── PersonServiceImpl.java  # Реализация
+└── utils/
+    └── PersonMapper.java         # Entity ↔ DTO преобразования
+</pre>
+</div>
+
+<div class="summary-box">
+    <h3>📋 Резюме: Ключевые аннотации</h3>
+    <table>
+        <tr>
+            <th>Аннотация</th>
+            <th>Назначение</th>
+        </tr>
+        <tr>
+            <td><code>@SpringBootApplication</code></td>
+            <td>Главный класс приложения</td>
+        </tr>
+        <tr>
+            <td><code>@RestController</code></td>
+            <td>REST API контроллер</td>
+        </tr>
+        <tr>
+            <td><code>@Service</code></td>
+            <td>Бизнес-логика</td>
+        </tr>
+        <tr>
+            <td><code>@Repository</code></td>
+            <td>Доступ к данным</td>
+        </tr>
+        <tr>
+            <td><code>@Entity</code></td>
+            <td>JPA сущность (таблица БД)</td>
+        </tr>
+        <tr>
+            <td><code>@Autowired</code> / <code>@RequiredArgsConstructor</code></td>
+            <td>Внедрение зависимостей</td>
+        </tr>
+        <tr>
+            <td><code>@Transactional</code></td>
+            <td>Транзакция БД</td>
+        </tr>
+        <tr>
+            <td><code>@Valid</code></td>
+            <td>Включить валидацию</td>
+        </tr>
+    </table>
+</div>
+
+<hr style="margin-top: 40px;">
+<p style="text-align: center; color: #666; margin-top: 20px;">
+    <em>Android Bootcamp 2025 — Backend Development</em>
+</p>
+
+</body>
+</html>
